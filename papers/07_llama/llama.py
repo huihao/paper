@@ -232,9 +232,9 @@ class LLaMAAttention:
         self.v_proj = np.random.randn(config.hidden_size, config.hidden_size) * 0.02
         self.o_proj = np.random.randn(config.hidden_size, config.hidden_size) * 0.02
         
-        # RoPE
+        # RoPE (using full hidden size for simplicity in this demo)
         self.rope = RotaryPositionalEmbedding(
-            self.head_dim, 
+            config.hidden_size, 
             config.max_position_embeddings,
             config.rope_theta
         )
