@@ -106,12 +106,35 @@ Available Tools in Toolformer:
 """
 
     def calculator(self, expression: str) -> str:
-        """Simple calculator tool"""
+        """Simple calculator tool using safe evaluation"""
+        import ast
+        import operator
+        
+        # Safe operators for basic math
+        operators = {
+            ast.Add: operator.add,
+            ast.Sub: operator.sub,
+            ast.Mult: operator.mul,
+            ast.Div: operator.truediv,
+            ast.Pow: operator.pow,
+            ast.USub: operator.neg,
+        }
+        
+        def safe_eval(node):
+            if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+                return node.value
+            elif isinstance(node, ast.BinOp):
+                return operators[type(node.op)](safe_eval(node.left), safe_eval(node.right))
+            elif isinstance(node, ast.UnaryOp):
+                return operators[type(node.op)](safe_eval(node.operand))
+            else:
+                raise ValueError(f"Unsupported operation")
+        
         try:
-            # Safe evaluation (in practice, use a proper parser)
-            result = eval(expression)
+            tree = ast.parse(expression, mode='eval')
+            result = safe_eval(tree.body)
             return str(result)
-        except:
+        except Exception:
             return "Error"
     
     def search(self, query: str) -> str:
