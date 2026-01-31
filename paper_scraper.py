@@ -20,6 +20,27 @@ class PaperScraper:
             'User-Agent': 'Mozilla/5.0 (compatible; LLM-Paper-Scraper/1.0)'
         }
     
+    def _parse_entry_to_paper(self, entry) -> Dict:
+        """
+        Parse a feedparser entry into a paper dictionary
+        
+        Args:
+            entry: Feedparser entry object
+            
+        Returns:
+            Dictionary containing paper information
+        """
+        return {
+            'title': entry.title,
+            'authors': [author.name for author in entry.authors],
+            'summary': entry.summary,
+            'published': entry.published,
+            'updated': entry.updated,
+            'arxiv_id': entry.id.split('/abs/')[-1],
+            'pdf_url': entry.id.replace('/abs/', '/pdf/') + '.pdf',
+            'categories': [tag.term for tag in entry.tags] if hasattr(entry, 'tags') else []
+        }
+    
     def search_papers(
         self, 
         query: str = "LLM OR \"large language model\"",
@@ -53,19 +74,7 @@ class PaperScraper:
             
             feed = feedparser.parse(response.content)
             
-            papers = []
-            for entry in feed.entries:
-                paper = {
-                    'title': entry.title,
-                    'authors': [author.name for author in entry.authors],
-                    'summary': entry.summary,
-                    'published': entry.published,
-                    'updated': entry.updated,
-                    'arxiv_id': entry.id.split('/abs/')[-1],
-                    'pdf_url': entry.id.replace('/abs/', '/pdf/') + '.pdf',
-                    'categories': [tag.term for tag in entry.tags] if hasattr(entry, 'tags') else []
-                }
-                papers.append(paper)
+            papers = [self._parse_entry_to_paper(entry) for entry in feed.entries]
             
             return papers
             
@@ -73,16 +82,15 @@ class PaperScraper:
             print(f"Error fetching papers: {e}")
             return []
     
-    def search_recent_llm_papers(self, days: int = 7, max_results: int = 20) -> List[Dict]:
+    def search_recent_llm_papers(self, max_results: int = 20) -> List[Dict]:
         """
         Search for recent LLM papers
         
         Args:
-            days: Number of days to look back
             max_results: Maximum number of results
             
         Returns:
-            List of recent LLM papers
+            List of recent LLM papers sorted by submission date
         """
         queries = [
             "LLM",
@@ -127,19 +135,7 @@ class PaperScraper:
             
             feed = feedparser.parse(response.content)
             
-            papers = []
-            for entry in feed.entries:
-                paper = {
-                    'title': entry.title,
-                    'authors': [author.name for author in entry.authors],
-                    'summary': entry.summary,
-                    'published': entry.published,
-                    'updated': entry.updated,
-                    'arxiv_id': entry.id.split('/abs/')[-1],
-                    'pdf_url': entry.id.replace('/abs/', '/pdf/') + '.pdf',
-                    'categories': [tag.term for tag in entry.tags] if hasattr(entry, 'tags') else []
-                }
-                papers.append(paper)
+            papers = [self._parse_entry_to_paper(entry) for entry in feed.entries]
             
             return papers
             

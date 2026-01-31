@@ -107,7 +107,7 @@ class TestPaperScraper(unittest.TestCase):
         }]
         
         # Execute
-        papers = self.scraper.search_recent_llm_papers(days=7, max_results=1)
+        papers = self.scraper.search_recent_llm_papers(max_results=1)
         
         # Verify
         self.assertEqual(len(papers), 1)
