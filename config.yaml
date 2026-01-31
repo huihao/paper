@@ -1,0 +1,26 @@
+# Configuration for LLM Paper Scraper
+
+# Default search parameters
+default_max_results: 10
+default_sort_by: "submittedDate"
+default_sort_order: "descending"
+
+# Search queries for LLM papers
+llm_keywords:
+  - "LLM"
+  - "large language model"
+  - "GPT"
+  - "transformer"
+  - "BERT"
+  - "natural language processing"
+  - "ChatGPT"
+  - "language models"
+
+# arXiv categories of interest
+categories:
+  - "cs.CL"  # Computation and Language
+  - "cs.AI"  # Artificial Intelligence
+  - "cs.LG"  # Machine Learning
+
+# Number of days to look back for recent papers
+recent_papers_days: 7
